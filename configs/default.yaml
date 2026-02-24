@@ -1,0 +1,107 @@
+# MIMIC-IV Prescriptive ICU — Configuration
+# Single source of truth for all itemids, paths, thresholds, and hyperparameters.
+
+paths:
+  mimic_dir: "data/"
+  results_dir: "results/"
+  figures_dir: "figures/"
+  logbook: "LOGBOOK.md"
+  app_cache: "results/pipeline_results.pkl"
+
+cohort:
+  min_los_hours: 1.0
+  primary_min_los_days: 2.0
+  first_stay_only: true
+
+treatment:
+  window_hours: 48
+  binarize_method: "median"
+  input_unit_filter: "ml"
+
+outcome:
+  variable: "los"
+  transform: "log"
+
+feature_windows:
+  confounders_hours: 6
+  sensitivity_hours: 24
+
+itemids:
+  labs:
+    lactate: 50813
+    creatinine: 50912
+    bun: 51006
+    wbc: 51301
+    glucose: 50931
+    platelets: 51265
+    bilirubin: 50885
+    hemoglobin: 51222
+    bicarbonate: 50882
+    sodium: 50983
+    potassium: 50971
+    pao2: 50821
+    fio2_lab: 50816
+
+  vitals:
+    hr: 220045
+    map_arterial: 220052
+    map_nibp: 220181
+    rr: 220210
+    spo2: 220277
+    fio2_chart: 223835
+    temp_f: 223761
+
+  gcs:
+    eye: 220739
+    verbal: 223900
+    motor: 223901
+
+  vasopressors: [221906, 221289, 221749, 222315, 221662, 221653, 221986]
+
+  ventilation:
+    invasive: 225792
+    noninvasive: 225794
+
+diagnoses:
+  sepsis:
+    icd9: ["99591", "99592", "78552"]
+    icd10_prefix: ["A40", "A41", "R652"]
+  aki:
+    icd9_prefix: ["584"]
+    icd10_prefix: ["N17"]
+  heart_failure:
+    icd9_prefix: ["428"]
+    icd10_prefix: ["I50"]
+  respiratory_failure:
+    icd9_prefix: ["518"]
+    icd10_prefix: ["J96"]
+
+surgical_units:
+  - "Surgical Intensive Care Unit (SICU)"
+  - "Trauma SICU (TSICU)"
+  - "Neuro Surgical Intensive Care Unit (Neuro SICU)"
+
+model:
+  xgboost:
+    max_depth: 3
+    n_estimators: 100
+    learning_rate: 0.05
+    min_child_weight: 5
+    subsample: 0.8
+    colsample_bytree: 0.7
+    reg_alpha: 1.0
+    reg_lambda: 1.0
+    random_state: 42
+
+  cate_surrogate:
+    max_depth: 2
+    n_estimators: 50
+    random_state: 42
+
+evaluation:
+  n_permutations: 1000
+  permutation_seed: 42
+  knn_k: 5
+  knn_metric: "cosine"
+  policy_tree_max_depth: 2
+  bonferroni_n_tests: 4
