@@ -12,14 +12,26 @@ import numpy as np
 import pandas as pd
 from xgboost import XGBRegressor
 
-import sys
-from pathlib import Path
 
-_commons = str(Path(__file__).parent.parent.parent.parent)
-if _commons not in sys.path:
-    sys.path.insert(0, _commons)
+def regression_report_dict(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+) -> dict[str, Any]:
+    """Compute standard regression metrics as a dictionary."""
+    from scipy.stats import pearsonr, spearmanr
+    from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
 
-from commons.utils.evaluation import regression_report_dict
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+
+    return {
+        "r2": r2_score(y_true, y_pred),
+        "rmse": root_mean_squared_error(y_true, y_pred),
+        "mae": mean_absolute_error(y_true, y_pred),
+        "pearson_r": pearsonr(y_true, y_pred).statistic,
+        "spearman_rho": spearmanr(y_true, y_pred).statistic,
+        "n_samples": len(y_true),
+    }
 
 
 # ---------------------------------------------------------------------------
